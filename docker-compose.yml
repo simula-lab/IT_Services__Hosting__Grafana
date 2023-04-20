@@ -2,6 +2,7 @@ version: '3.3'
 services:
   loki:
     image: grafana/loki
+    container_name: loki
     volumes:
       - /root/grafana-stack/loki:/etc/loki
     ports:
@@ -15,8 +16,20 @@ services:
       VIRTUAL_HOST: "loki.monitoring.simulalab.org"
       LETSENCRYPT_HOST: "loki.monitoring.simulalab.org"
       LETSENCRYPT_EMAIL: "it@simulalab.org"
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - /root/grafana-stack/prometheus:/config
+      - prometheus-data:/prometheus
+    restart: unless-stopped
+    command:
+      - "--config.file=/config/prometheus.yml"
   promtail:
     image: grafana/promtail
+    container_name: promtail
     volumes:
       - /var/log:/var/log
       - /root/grafana-stack/promtail:/etc/promtail
@@ -31,6 +44,7 @@ services:
       - loki
   grafana:
     image: grafana/grafana:latest
+    container_name: grafana
     volumes:
     - grafana-data:/var/lib/grafana
     ports:
@@ -53,3 +67,4 @@ networks:
     name: http-proxy_backend
 volumes:
   grafana-data:
+  prometheus-data:

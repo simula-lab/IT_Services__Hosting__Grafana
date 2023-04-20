@@ -37,3 +37,12 @@ limits_config:
   per_stream_rate_limit: 12MB
 #chunk_store_config:
   #  max_look_back_period: 336h
+  #
+
+# https://community.grafana.com/t/too-many-outstanding-requests-on-loki-2-7-1/78249
+query_scheduler:
+  max_outstanding_requests_per_tenant: 2048
+
+query_range:
+  parallelise_shardable_queries: false
+  split_queries_by_interval: 0
