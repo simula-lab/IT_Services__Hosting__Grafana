@@ -1,4 +1,4 @@
-version: '3.3'
+---
 services:
   loki:
     image: grafana/loki
@@ -11,7 +11,7 @@ services:
     command: -config.file=/etc/loki/loki-config.yml
     networks:
       - loki
-      - backend
+      - proxy 
     environment:
       VIRTUAL_HOST: "loki.monitoring.simulalab.org"
       LETSENCRYPT_HOST: "loki.monitoring.simulalab.org"
@@ -33,21 +33,22 @@ services:
       - "--config.file=/config/prometheus.yml"
     networks:
       - prometheus
-  promtail:
-    image: grafana/promtail
-    container_name: promtail
-    volumes:
-      - /var/log:/var/log
-      - /root/grafana-stack/promtail:/etc/promtail
-    # ports:
-    #   - "1514:1514" # this is only needed if you are going to send syslogs
-    restart: unless-stopped
-    environment:
-      PROMTAIL_HOSTNAME: ${PROMTAIL_HOSTNAME}
-      DROPLET_HOSTNAME: ${DROPLET_HOSTNAME}
-    command: -config.file=/etc/promtail/promtail-config.yml -config.expand-env  #--log.level=debug
-    networks:
-      - loki
+      - proxy 
+#  promtail:
+#    image: grafana/promtail
+#    container_name: promtail
+#    volumes:
+#      - /var/log:/var/log
+#      - /root/grafana-stack/promtail:/etc/promtail
+#    # ports:
+#    #   - "1514:1514" # this is only needed if you are going to send syslogs
+#    restart: unless-stopped
+#    environment:
+#      PROMTAIL_HOSTNAME: ${PROMTAIL_HOSTNAME}
+#      DROPLET_HOSTNAME: ${DROPLET_HOSTNAME}
+#    command: -config.file=/etc/promtail/promtail-config.yml -config.expand-env  #--log.level=debug
+#    networks:
+#      - loki
   grafana:
     image: grafana/grafana:latest
     container_name: grafana
